@@ -49,3 +49,5 @@ def extract_names_eng():
             list_names[index] = re.sub('[\(\[].*?[\)\]]', '', name).rstrip()  # delete text within ()
 
     return set(list_names)
+
+print("Hello World")
