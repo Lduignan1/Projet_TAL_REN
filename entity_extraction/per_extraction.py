@@ -56,8 +56,6 @@ class PerExtraction:
 
         self.names = self.names.union(set(list_names))
 
-    def show_contents(self):
-        return self.names
 
 
 
