@@ -1,6 +1,9 @@
 import re
-import xml.etree.ElementTree as ET
+
 from collections import Counter
+import xml.etree.ElementTree as ET
+
+from entity_extraction.per_extraction import PerExtraction
 
 
 def find_titles(text):
@@ -79,6 +82,9 @@ def first_and_last_names(text):
 
 if __name__ == '__main__':
     text = "Ms May criticized Mr Johnson while Mrs Obama saluted Dr. Fauci"
-    print(find_titles(text))
+    assert find_titles(text) == ['Ms May', 'Mr Johnson', 'Mrs Obama', 'Dr. Fauci']
+
+    P = PerExtraction()
+    assert len(P.names) == 2287
 
 
