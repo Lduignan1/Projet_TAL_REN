@@ -63,6 +63,7 @@ def xml_to_txt(xml):
 
 if __name__ == '__main__':
     # adding each token from corpus to a line in a new file (train)
+    tokenized_text = xml_to_txt('corpus_train_annotated_clean.xml')
     with open('text_train_tokenized_clean.txt', 'w+', encoding='utf-8') as file:
         for token in tokenized_text:
             file.write("%s\n" % token)
