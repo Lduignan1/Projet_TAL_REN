@@ -10,7 +10,7 @@ org_set = set()
 loc_set = set()
 
 # putting all tokens in test corpus into list
-# and attempt to gather ONLY NEs; no tags
+# and attempt to gather ONLY tokens; no tags
 
 with open('text_train_tokenized_clean.txt', 'r', encoding='utf-8') as file:
     for line in file:
@@ -29,7 +29,7 @@ with open('text_test_tokenized_clean.txt', 'r', encoding='utf-8') as file:
     for line in file:
         pred_list.append(line.split()[0])
 
-# writing NER pred tags onto new file 
+# writing NER pred tags onto new file
 with open('output.txt', 'w+', encoding='utf-8') as file:
     for index, token in enumerate(pred_list):
         duplicate = False
