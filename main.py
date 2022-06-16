@@ -5,6 +5,46 @@ import xml.etree.ElementTree as ET
 
 from entity_extraction.per_extraction import PerExtraction
 
+per_set = set()
+org_set = set()
+loc_set = set()
+
+# putting all tokens in test corpus into list
+# and attempt to gather ONLY NEs; no tags
+
+with open('text_train_tokenized_clean.txt', 'r', encoding='utf-8') as file:
+    for line in file:
+        #pred_list.append(line.rstrip())
+        if '-PER' in line:
+            per_set.add(line.rstrip())
+        elif '-ORG' in line:
+            org_set.add(line.rstrip())
+        elif '-LOC' in line:
+            loc_set.add(line.rstrip())
+
+pred_list = []
+
+# extracting only the tokens
+with open('text_test_tokenized_clean.txt', 'r', encoding='utf-8') as file:
+    for line in file:
+        pred_list.append(line.split()[0])
+
+# writing NER pred tags onto new file 
+with open('output.txt', 'w+', encoding='utf-8') as file:
+    for index, token in enumerate(pred_list):
+        duplicate = False
+
+        if token in per_set or token in P.first_names:
+            file.write(f"{token} B-PER\n")
+        elif token in org_set:
+            file.write(f"{token} B-ORG\n")
+        elif token in loc_set:
+            file.write(f"{token} B-LOC\n")
+        else:
+            if duplicate:
+                continue
+            else:
+                file.write(f"{token} O\n")
 
 def find_titles(text):
     """Match any string that is preceded by an honorific"""
