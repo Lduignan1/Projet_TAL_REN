@@ -57,8 +57,7 @@ class LocExtraction:
         list_loc.remove(list_loc[0])  # delete errant element
 
         self.loc = self.loc.union((set(list_loc)))
-        print(self.loc)
-LocExtraction()
+
 
 
 
