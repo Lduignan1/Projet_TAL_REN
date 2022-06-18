@@ -34,5 +34,3 @@ class OrgExtraction:
       list_org.remove(list_org[0])  # delete errant element
 
       self.org = self.org.union((set(list_org)))
-OrgExtraction()
-
