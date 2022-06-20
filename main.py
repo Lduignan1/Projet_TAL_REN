@@ -4,127 +4,109 @@ from collections import Counter
 import xml.etree.ElementTree as ET
 
 from entity_extraction.per_extraction import PerExtraction
-
-per_set = set()
-org_set = set()
-loc_set = set()
-
-# putting all tokens in test corpus into list
-# and attempt to gather ONLY tokens; no tags
-
-with open('text_train_tokenized_clean.txt', 'r', encoding='utf-8') as file:
-    for line in file:
-        #pred_list.append(line.rstrip())
-        if '-PER' in line:
-            per_set.add(line.rstrip())
-        elif '-ORG' in line:
-            org_set.add(line.rstrip())
-        elif '-LOC' in line:
-            loc_set.add(line.rstrip())
-
-pred_list = []
-
-# extracting only the tokens
-with open('text_test_tokenized_clean.txt', 'r', encoding='utf-8') as file:
-    for line in file:
-        pred_list.append(line.split()[0])
-
-# writing NER pred tags onto new file
-with open('output.txt', 'w+', encoding='utf-8') as file:
-    for index, token in enumerate(pred_list):
-        duplicate = False
-
-        if token in per_set or token in P.first_names:
-            file.write(f"{token} B-PER\n")
-        elif token in org_set:
-            file.write(f"{token} B-ORG\n")
-        elif token in loc_set:
-            file.write(f"{token} B-LOC\n")
-        else:
-            if duplicate:
-                continue
-            else:
-                file.write(f"{token} O\n")
+from entity_extraction.loc_extraction import LocExtraction
+from entity_extraction.org_extraction import OrgExtraction
 
 def find_titles(text):
     """Match any string that is preceded by an honorific"""
-    title_pattern = r'(?:Mr?s?\.?|Dr\.?|M\.|Mmes?|Mlles?|Pr) [A-Z][a-z]+'
+    title_pattern = r'(?:Mr?s?\.?|Dr\.?|M\.|Mmes?|Mlles?|Pr) [A-Z][a-zà-ÿ]+'
     regex_pattern = re.compile(title_pattern)
 
     res = regex_pattern.findall(text)
     return res
 
 
-def find_titles2(text):
-    """Match any string that is preceded by an honorific and gives it position"""
-    title_pattern = r'(?:Mr?s?\.?|Dr\.?|M\.|Mmes?|Mlles?) [A-z]+'
-    regex_pattern = re.compile(title_pattern)
+def find_orgs(text):
+    """Match any string that is preceded by certain words used in organization names"""
+    org_pattern = r'(?:Parti|Association|Fédération|Fondation|Groupe|Institut|Société|Union) [A-zà-ÿ]+ [A-z]*'
+    regex_pattern = re.compile(org_pattern)
 
-    for m in regex_pattern.finditer(text):
-        print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
+    res = regex_pattern.findall(text)
 
+    return res
 
-def count_total_entities(tree):
-    count = 0
+P = PerExtraction()
+L = LocExtraction()
+O = OrgExtraction()
 
-    # count number of entity tags
-    for element in tree.iter('ENAMEX'):
-        # print(element.attrib)
-        count += 1
-    print(f'Number of named entities in whole corpus: {count}')
-
-
-def count_by_type(root):
-    count_per = 0
-    count_org = 0
-    count_loc = 0
-
-    for enamex_tag in root.findall('news_item/news_text/para/ENAMEX'):
-        value = enamex_tag.get('type')
-        if value == 'Person':
-            # print(enamex_tag.attrib)
-            count_per += 1
-        elif value == 'Organization' or value == 'Company':
-            # print(enamex_tag.attrib)
-            count_org += 1
-        elif value == 'Location':
-            # print(enamex_tag.attrib)
-            count_loc += 1
-
-    print(f'Number of PER: {count_per}')
-    print(f'Number of ORG: {count_org}')
-    print(f'Number of LOC: {count_loc}')
+per_set = set()
+org_set = set()
+loc_set = set()
 
 
-def most_freq_per(per_entities, n):
-    """Return n most frequent PER entities from corpus"""
-    lst_per_entities = []
-    for per_entity in per_entities:
-        value = per_entity.get('type')
-        if value == 'Person':
-            lst_per_entities.append(per_entity.text)
+pred_list = []
+token_list = []
+not_o_tags = []
+gold_tags = []
 
-    return Counter(lst_per_entities).most_common(n)
+# extracting only the tokens
+with open('text_train_tokenized_clean.txt', 'r', encoding='utf-8') as file:
+    for line in file:
+        token_list.append(line.split()[0])
+        gold_tags.append(line)
 
+        if ' O' not in line:
+            not_o_tags.append(line)
 
-def first_and_last_names(text):
-    patterns = ["|".join(first_names), r'[A-Z][a-z]+']
+# adding names recognized by find_title function
+per_set = set()
+for elt in set(find_titles(corpus)):
+    per_set.add(elt.split()[1])
 
-    combined_pattern = "|".join(patterns)
-    matches = re.findall(combined_pattern, text)
+# adding titles recognized by find_title function
+title_set = set()
+for elt in set(find_titles(corpus)):
+    title_set.add(elt.split()[0])
 
-    for index, token in enumerate(matches):
-        if (token not in first_names) and (matches[index - 1] in first_names):
-            print(matches[index - 1] + " " + token)
-        elif matches[index + 1] in first_names:
-            print(token)
+# adding organization titles recognized by find_orgs function
+org_set = set()
+for elt in set(find_orgs(corpus)):
+    org_set.add(elt.split()[0])
 
+# writing NER pred tags onto new file
+pred_tags = []
+with open('output.txt', 'w+', encoding='utf-8') as file:
+    i = 0
+    for index, token in enumerate(token_list):
+        if token in P.first_names or token in title_set:
+            tag = f"{token} B-PER\n"
+            file.write(tag)
+        elif token in P.last_names or token in per_set:
+            tag = f"{token} I-PER\n"
+            file.write(tag)
+        elif token in O.org or (len(token) > 2 and token.isupper()) or token in org_set:
+            tag = f"{token} B-ORG\n"
+            file.write(tag)
+
+        elif token in L.loc:
+            tag = f"{token} B-LOC\n"
+            file.write(tag)
+        else:
+            tag = f"{token} O\n"
+            file.write(tag)
+
+        pred_tags.append(tag)
+
+pred_count = 0
+corr_count = 0
+for gold,pred in zip(gold_tags, pred_tags):
+    if (' O' not in pred):
+        pred_count += 1
+        if pred == gold and (' O' not in gold):
+            corr_count += 1
+
+precision = (corr_count/pred_count)
+recall = (corr_count/len(not_o_tags))
+fscore = (2 * precision * recall)/(precision + recall)
+
+print(f'Precision: {round(precision, 2)}')
+print(f'Recall: {round(recall, 2)}')
+print(f'F-score: {round(fscore, 2)}')
 
 if __name__ == '__main__':
     text = "Ms May criticized Mr Johnson while Mrs Obama saluted Dr. Fauci"
     assert find_titles(text) == ['Ms May', 'Mr Johnson', 'Mrs Obama', 'Dr. Fauci']
 
-    P = PerExtraction()
-    assert len(P.names) == 2287
+
 
 
