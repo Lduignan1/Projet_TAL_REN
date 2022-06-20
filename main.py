@@ -1,8 +1,5 @@
 import re
 
-from collections import Counter
-import xml.etree.ElementTree as ET
-
 from entity_extraction.per_extraction import PerExtraction
 from entity_extraction.loc_extraction import LocExtraction
 from entity_extraction.org_extraction import OrgExtraction
@@ -29,8 +26,7 @@ P = PerExtraction()
 L = LocExtraction()
 O = OrgExtraction()
 
-per_set = set()
-org_set = set()
+
 loc_set = set()
 
 
@@ -40,13 +36,16 @@ not_o_tags = []
 gold_tags = []
 
 # extracting only the tokens
-with open('text_train_tokenized_clean.txt', 'r', encoding='utf-8') as file:
+with open('Corpora/text_test_tokenized_clean.txt', 'r', encoding='utf-8') as file:
     for line in file:
         token_list.append(line.split()[0])
         gold_tags.append(line)
 
         if ' O' not in line:
             not_o_tags.append(line)
+            
+# converting corpus to str
+corpus = " ".join(token_list)
 
 # adding names recognized by find_title function
 per_set = set()
@@ -106,6 +105,8 @@ print(f'F-score: {round(fscore, 2)}')
 if __name__ == '__main__':
     text = "Ms May criticized Mr Johnson while Mrs Obama saluted Dr. Fauci"
     assert find_titles(text) == ['Ms May', 'Mr Johnson', 'Mrs Obama', 'Dr. Fauci']
+
+
 
 
 
