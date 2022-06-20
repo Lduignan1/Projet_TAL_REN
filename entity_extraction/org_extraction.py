@@ -12,13 +12,12 @@ class OrgExtraction:
     def load_org_fr(self):
       """extract french organisation names from a wikipedia page"""
       urls = [
-                'https://fr.wikipedia.org/wiki/Liste_des_d%C3%A9partements_fran%C3%A7ais',
-                'https://fr.wikipedia.org/wiki/Liste_des_cantons_fran%C3%A7ais_avant_2015',
-                'https://fr.wikipedia.org/wiki/Listes_des_communes_de_France',
-                'https://fr.wikipedia.org/wiki/Liste_des_unit%C3%A9s_urbaines_de_France',
-                'https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Ville_de_plus_de_100_000_habitants_en_France',
-                'https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Ville_de_50_000_%C3%A0_100_000_habitants_en_France',
-                'https://fr.wikipedia.org/wiki/Liste_des_pr%C3%A9fectures_de_France'
+              'https://fr.wikipedia.org/wiki/Liste_d%27associations_fran%C3%A7aises_reconnues_d%27utilit%C3%A9_publique',
+              'https://fr.wikipedia.org/wiki/Organisations_internationales_si%C3%A9geant_en_France',
+              'https://fr.wikipedia.org/wiki/Liste_des_organisations_de_solidarit%C3%A9_internationale_fran%C3%A7aises',
+              'https://fr.wikipedia.org/wiki/Institutions_de_la_R%C3%A9publique_fran%C3%A7aise',
+              'https://fr.wikipedia.org/wiki/Liste_des_partis_politiques_sous_la_Cinqui%C3%A8me_R%C3%A9publique',
+              'https://fr.wikipedia.org/wiki/Liste_de_sigles_de_l%27Organisation_des_Nations_unies'
         ]
       for url in urls:
             html_text = requests.get(url).text
