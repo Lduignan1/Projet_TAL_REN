@@ -19,7 +19,7 @@ def xml_to_txt(xml):
     """
     tokenized_text = []
     with open(xml, 'r', encoding='utf-8') as f:
-        soup = BeautifulSoup(f.read(), "lxml")
+        soup = BeautifulSoup(f.read(), "html.parser")
         for line in soup.find_all('para'):
 
             entity_list_para = []
@@ -59,14 +59,27 @@ def xml_to_txt(xml):
 
             tokenized_text.append(list(flat2gen(entity_list_para)))
 
+    tokenized_text = [token for tokens in tokenized_text for token in tokens]
     return tokenized_text
 
 if __name__ == '__main__':
-    # adding each token from corpus to a line in a new file (train)
-    tokenized_text = xml_to_txt('corpus_train_annotated_clean.xml')
-    with open('text_train_tokenized_clean.txt', 'w+', encoding='utf-8') as file:
-        for token in tokenized_text:
+    # adding each token from corpus to a line in a new file
+
+    corpus_train = input("Enter the training corpus: ")
+    tokenized_text_train = xml_to_txt(corpus_train)
+    with open('Corpora/text_train_tokenized_clean.txt', 'w+', encoding='utf-8') as file:
+        for token in tokenized_text_train:
             file.write("%s\n" % token)
+
+        print("New file created: text_train_tokenized_clean.txt")
+
+    corpus_test = input("Enter the test corpus: ")
+    tokenized_text_test = xml_to_txt(corpus_test)
+    with open('Corpora/text_test_tokenized_clean.txt', 'w+', encoding='utf-8') as file:
+        for token in tokenized_text_test:
+            file.write("%s\n" % token)
+
+        print("New file created: text_test_tokenized_clean.txt")
 
 
 
