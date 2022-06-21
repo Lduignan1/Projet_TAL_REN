@@ -4,6 +4,8 @@ from entity_extraction.per_extraction import PerExtraction
 from entity_extraction.loc_extraction import LocExtraction
 from entity_extraction.org_extraction import OrgExtraction
 
+corpus = input("Please choose a corpus: ")
+
 def find_titles(text):
     """Match any string that is preceded by an honorific"""
     title_pattern = r'(?:Mr?s?\.?|Dr\.?|M\.|Mmes?|Mlles?|Pr) [A-Z][a-zà-ÿ]+'
@@ -36,37 +38,37 @@ not_o_tags = []
 gold_tags = []
 
 # extracting only the tokens
-with open('Corpora/text_test_tokenized_clean.txt', 'r', encoding='utf-8') as file:
+with open(corpus, 'r', encoding='utf-8') as file:
     for line in file:
         token_list.append(line.split()[0])
         gold_tags.append(line)
 
         if ' O' not in line:
             not_o_tags.append(line)
-            
+
 # converting corpus to str
-corpus = " ".join(token_list)
+corpus_str = " ".join(token_list)
 
 # adding names recognized by find_title function
 per_set = set()
-for elt in set(find_titles(corpus)):
+for elt in set(find_titles(corpus_str)):
     per_set.add(elt.split()[1])
 
 # adding titles recognized by find_title function
 title_set = set()
-for elt in set(find_titles(corpus)):
+for elt in set(find_titles(corpus_str)):
     title_set.add(elt.split()[0])
 
 # adding organization titles recognized by find_orgs function
 org_set = set()
-for elt in set(find_orgs(corpus)):
+for elt in set(find_orgs(corpus_str)):
     org_set.add(elt.split()[0])
 
 # writing NER pred tags onto new file
 pred_tags = []
 with open('output.txt', 'w+', encoding='utf-8') as file:
     i = 0
-    for index, token in enumerate(token_list):
+    for token in token_list:
         if token in P.first_names or token in title_set:
             tag = f"{token} B-PER\n"
             file.write(tag)
@@ -86,6 +88,8 @@ with open('output.txt', 'w+', encoding='utf-8') as file:
 
         pred_tags.append(tag)
 
+print("\nNew file created: output.txt\n")
+
 pred_count = 0
 corr_count = 0
 for gold,pred in zip(gold_tags, pred_tags):
@@ -98,13 +102,12 @@ precision = (corr_count/pred_count)
 recall = (corr_count/len(not_o_tags))
 fscore = (2 * precision * recall)/(precision + recall)
 
+print("***System results***")
 print(f'Precision: {round(precision, 2)}')
 print(f'Recall: {round(recall, 2)}')
 print(f'F-score: {round(fscore, 2)}')
 
-if __name__ == '__main__':
-    text = "Ms May criticized Mr Johnson while Mrs Obama saluted Dr. Fauci"
-    assert find_titles(text) == ['Ms May', 'Mr Johnson', 'Mrs Obama', 'Dr. Fauci']
+
 
 
 
