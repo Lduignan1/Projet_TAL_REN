@@ -74,7 +74,7 @@ class LocExtraction:
 
         lst_data = []
 
-        for row in rows[2:]:
+        for row in rows[1:]:
             data = [d.text.rstrip() for d in row.find_all('td')]
             lst_data.append(data[1])
 
@@ -82,10 +82,3 @@ class LocExtraction:
             lst_data[index] = re.sub('[\(\[].*?[\)\]]', '', city).rstrip()
 
         self.loc = self.loc.union((set(lst_data)))
-
-
-
-
-
-
-
