@@ -1,7 +1,7 @@
 # Projet_TAL_REN
 
-Un programme de reconnaissance d'entités nommées (REN) qui applique une approche à base de règles et des ressources externes pour identifier les entités de type personne (PER), organization/entreprise (ORG) et lieu (LOC). 
-Et établir un système d'évaluation.
+Un programme de reconnaissance d'entités nommées (REN) qui applique une approche à base de règles et des ressources externes pour identifier les entités de type personne (PER), organization/entreprise (ORG) et lieu (LOC). Comprend un système d'évaluation. 
+
 
 ## Chargement de corpus 
 Dans un premier temps, nous allons convertir un corpus xml en txt à l'aide du programme `corpus_converter.py`.
