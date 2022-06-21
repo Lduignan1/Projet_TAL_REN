@@ -54,15 +54,13 @@ if __name__ == '__main__':
     # converting corpus to str
     corpus_str = " ".join(token_list)
 
-    # adding names recognized by find_title function
+    # adding titles and names recognized by find_title function
+    title_set = set()
     per_set = set()
     for elt in set(find_titles(corpus_str)):
+        title_set.add(elt.split()[0])
         per_set.add(elt.split()[1])
 
-    # adding titles recognized by find_title function
-    title_set = set()
-    for elt in set(find_titles(corpus_str)):
-        title_set.add(elt.split()[0])
 
     # adding organization titles recognized by find_orgs function
     org_set = set()
